@@ -199,7 +199,7 @@ class ZhuyinPinyin {
                 return ['', $exception, $tone];
             }
 
-            $exception = $ss[0];
+ /*           $exception = $ss[0];
 
             if ($exception == 'r') {
                 if ($s_len == 2) {
@@ -214,7 +214,7 @@ class ZhuyinPinyin {
                     $tone = 0;
                 }
                 return ['', 'er', $tone];
-            }
+            }*/
         }
 
         if ($s_len == 1) {
@@ -235,7 +235,7 @@ class ZhuyinPinyin {
 
         $i = 0;
 
-        for (; $i < mb_strlen($s); $i++) {
+        for (; $i < $s_len; $i++) {
             $c = $ss[$i];
 
             if (!$this->isConsonant($c)) {
@@ -249,7 +249,7 @@ class ZhuyinPinyin {
             $consonant = $s[0];
         }
 
-        for (; $i < mb_strlen($s); $i++) {
+        for (; $i < $s_len; $i++) {
             $c = $ss[$i];
 
             if ($c < 'a' or $c > 'z') {
@@ -257,14 +257,15 @@ class ZhuyinPinyin {
             }
         }
 
-        $rhymes = substr($s, mb_strlen($consonant), $i - mb_strlen($consonant));
+        $con_len = mb_strlen($consonant);
+        $rhymes = mb_substr($s, $con_len, $i - $con_len);
 
         // rhymes could not be empty, and the length of tone is at most 1
-        if (mb_strlen($rhymes) == 0 or (mb_strlen($s) - $i > 2)) {
+        if (mb_strlen($rhymes) == 0 or ($s_len - $i > 2)) {
             return ['', '', 0];
         }
 
-        if ($i < mb_strlen($s)) {
+        if ($i < $s_len) {
             $tone = str_replace('0', '', $ss[$i]);
 
             if ($tone < 0 or $tone > 4) {
@@ -305,7 +306,7 @@ class ZhuyinPinyin {
                 return '';
             }
 
-            $ok = $this->map_p2z[$consonant];
+            $ok = @ $this->map_p2z[$consonant];
 
             if (!$ok) {
                 return '';
@@ -327,7 +328,7 @@ class ZhuyinPinyin {
             return '';
         }
 
-        $ok = $this->map_p2z[$rhymes];
+        $ok = @ $this->map_p2z[$rhymes];
 
         if (!$ok) {
             return '';
@@ -425,7 +426,7 @@ class ZhuyinPinyin {
         // is it an valid consonant?
         if (mb_strlen($consonant) > 0) {
 
-            $ok = $this->map_p2z[$consonant];
+            $ok = @ $this->map_p2z[$consonant];
 
             if (!$ok) {
                 return ['', '', 0];
@@ -457,7 +458,7 @@ class ZhuyinPinyin {
         }
 
         // is it an valid rhymes?
-        $ok = $this->map_p2z[$rhymes];
+        $ok = @ $this->map_p2z[$rhymes];
 
         if (!$ok) {
             return ['', '', 0];
@@ -539,7 +540,7 @@ class ZhuyinPinyin {
         // consonant must be valid
         if (mb_strlen($consonant) > 0) {
 
-            $ok = $this->map_p2z[$consonant];
+            $ok = @ $this->map_p2z[$consonant];
 
             if (!$ok) {
                 return '';
@@ -551,7 +552,7 @@ class ZhuyinPinyin {
 
         // rhymes must be valid
         if (mb_strlen($rhymes) > 0) {
-            $ok = $this->map_p2z[$rhymes];
+            $ok = @ $this->map_p2z[$rhymes];
 
             if (!$ok) {
                 return '';
@@ -561,7 +562,7 @@ class ZhuyinPinyin {
             unset($ok);
         }
 
-        echo 'x:' . $tone . "\n";
+//        echo 'x:' . $tone . "\n";
 
         return $consonant . $rhymes . $this->zhuyin_tones[$tone];
     }
@@ -606,7 +607,7 @@ class ZhuyinPinyin {
         $i = 0;
         foreach ($s_splited as $ch) {
             // if the character is consonant or rhymes
-            if (!empty($this->map_z2p[$ch])) {
+            if (isset($this->map_z2p[$ch])) {
 
                 $ok = $this->map_z2p[$ch];
                 // if it is the 1st character and it is consonant
@@ -659,7 +660,7 @@ class ZhuyinPinyin {
 
 
         // is it an valid rhymes?
-        $rhymes = $this->map_z2p[$rhymes];
+        $rhymes = @ $this->map_z2p[$rhymes];
 
         if (!$rhymes or !$this->isRhymes($rhymes[0])) {
             return ['', '', 0];
